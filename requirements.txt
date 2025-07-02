@@ -1,0 +1,17 @@
+# Core LiveKit Agent
+livekit-agents
+livekit-plugins-openai
+livekit-api
+
+# Environment & Configuration  
+python-dotenv
+
+# OpenAI SDK (for Groq compatibility)
+openai
+
+# FastAPI Backend 
+fastapi
+uvicorn[standard]
+
+# Additional utilities
+pydantic
