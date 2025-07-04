@@ -1,5 +1,5 @@
 # Core LiveKit Agent
-livekit-agents[openai]
+livekit-agents[openai,groq]
 livekit-api
 
 # Environment & Configuration  
