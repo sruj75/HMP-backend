@@ -17,6 +17,18 @@ class Assistant(Agent):  # Our Assistant class inherits from Agent
             The user controls when to speak and when to stop, so wait for their input."""
         )
 
+    async def handle_room_events(self, event):
+        """Listen for frontend control signals"""
+        if event.type == "start_listening":
+            # Start STT
+            pass
+        elif event.type == "stop_listening":
+            # Stop STT, process response
+            pass
+        elif event.type == "interrupt":
+            # Stop current TTS
+            pass
+
 
 # Async Functions (can pause and wait)
 async def entrypoint(ctx: agents.JobContext):  # Main function that runs when user joins
