@@ -11,13 +11,18 @@ load_dotenv()
 
 app = FastAPI()
 
-# Add CORS middleware
+# CORS (Cross-Origin Resource Sharing) middleware allows your backend to accept requests from your Expo app (or any frontend).
+# When the Expo app sends a POST request to /token, the browser first checks:
+#   "Is this origin (the Expo app's URL) allowed to access this backend?"
+# This middleware answers "yes" (for any domain, in development), so your create_token() function can be called from the Expo app.
+# In production, you should restrict 'allow_origins' to your real frontend domain for better security.
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],           # Allow any domain (development-friendly)
-    allow_credentials=True,        # Allow authentication headers  
-    allow_methods=["GET", "POST"], # Allow the methods you use
-    allow_headers=["*"],           # Allow any headers
+    allow_origins=["*"],           # Allow any domain (development-friendly; change to your frontend URL in production)
+    allow_credentials=True,        # Allow cookies and authentication headers  
+    allow_methods=["GET", "POST"], # Allow only the methods you use (GET and POST)
+    allow_headers=["*"],           # Allow any headers (needed for custom headers from frontend)
 )
 
 # Data models (Pydantic automatically validates these)
@@ -69,7 +74,12 @@ async def create_token(request: TokenRequest):
         expires_in=1800  # 30 minutes
     )
 
-# Health check endpoint - lets Railway or any monitoring tool verify the backend is running
+# Health check endpoint
+# Purpose:
+# - This endpoint allows deployment platforms (like Railway), load balancers, or monitoring tools
+#   to check if the backend service is running and responsive.
+# - It is a simple GET endpoint that returns a JSON response indicating the service status.
+# - Useful for automated uptime checks, deployment readiness, and debugging.
 @app.get("/health")
 async def health_check():
     """
