@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import time
 import uuid
+import datetime
 from livekit import api
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -63,7 +64,7 @@ async def create_token(request: TokenRequest):
                 can_publish_data=True # Can send text messages
             )
         )
-        .with_ttl(1800)  # 30 minutes
+        .with_ttl(datetime.timedelta(seconds=1800))  # 30 minutes
         .to_jwt()
     )
     
