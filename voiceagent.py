@@ -6,6 +6,8 @@ from livekit.plugins import openai, groq, silero, noise_cancellation  # Audio pr
 from livekit.plugins.turn_detector import multilingual  # Turn detection
 import os  # Built-in module for environment variables
 import logging  # Add logging for debugging
+import asyncio  # For async operations
+import sys  # For command line arguments
 
 # Configure logging - this helps us see what's happening
 logging.basicConfig(
@@ -16,6 +18,33 @@ logger = logging.getLogger(__name__)  # Create logger for this file
 
 # Load environment variables from .env file
 load_dotenv()  # Now we can use os.getenv("GROQ_API_KEY")
+
+
+async def download_models():
+    """
+    Pre-download AI models that can be downloaded without LiveKit context.
+    Some models require LiveKit job context and will be downloaded on first use.
+    """
+    logger.info("🔄 Starting model pre-download process...")
+    
+    try:
+        # Download Silero VAD models (works without job context)
+        logger.info("📥 Downloading Silero VAD models...")
+        silero.VAD.load()
+        logger.info("✅ Silero VAD models downloaded successfully")
+        
+        # Download noise cancellation models (works without job context)
+        logger.info("📥 Downloading noise cancellation models...")
+        noise_cancellation.BVC()
+        logger.info("✅ Noise cancellation models downloaded successfully")
+        
+        logger.info("🎉 Available models downloaded successfully!")
+        logger.info("ℹ️ Turn detection models will download on first agent connection (requires LiveKit context)")
+        
+    except Exception as e:
+        logger.error(f"❌ Error downloading models: {str(e)}", exc_info=True)
+        # Don't raise - let the agent start even if some models failed to download
+        logger.warning("⚠️ Continuing with agent startup despite model download errors")
 
 
 class Assistant(Agent):  # Our Assistant class inherits from Agent
@@ -95,8 +124,22 @@ async def entrypoint(ctx: agents.JobContext):  # Main function that runs when us
 
 # Main guard - only runs when script is executed directly
 if __name__ == "__main__":
-    logger.info("Starting LiveKit agent worker with automatic voice detection")
+    # Check if we should download models or run the agent
+    if len(sys.argv) > 1 and sys.argv[1] == "download-files":
+        logger.info("🚀 Running model download process...")
+        asyncio.run(download_models())
+        logger.info("📦 Model download completed. Exiting.")
+        sys.exit(0)
+    
+    # Normal agent startup
+    logger.info("🚀 Starting LiveKit agent worker with automatic voice detection")
+    
+    # Pre-download models on startup for faster first connections
+    logger.info("🔄 Pre-downloading models for optimal performance...")
+    asyncio.run(download_models())
+    
     # Start the LiveKit agent worker
+    logger.info("🎯 Starting agent worker...")
     agents.cli.run_app(
         agents.WorkerOptions(entrypoint_fnc=entrypoint)  # Pass our entrypoint function
     )
