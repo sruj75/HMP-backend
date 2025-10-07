@@ -1,1 +1,1 @@
-web: chmod +x start.sh && ./start.sh
+web: python voiceagent.py download-files && uvicorn token_server:app --host 0.0.0.0 --port $PORT
