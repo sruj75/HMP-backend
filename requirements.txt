@@ -1,17 +1,8 @@
 # Core LiveKit Agent
-livekit-agents[openai,groq]
 livekit-api
-
-# LiveKit Plugins for VAD, Turn Detection, Noise Cancellation
-livekit-plugins-silero
-livekit-plugins-turn-detector  
-livekit-plugins-noise-cancellation
 
 # Environment & Configuration  
 python-dotenv
-
-# OpenAI SDK (for Groq compatibility)
-openai
 
 # FastAPI Backend 
 fastapi

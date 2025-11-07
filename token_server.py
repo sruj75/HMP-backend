@@ -32,9 +32,7 @@ class TokenRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     token: str
-    room_name: str
     server_url: str
-    expires_in: int  # seconds until token expires
 
 @app.post("/token", response_model=TokenResponse)
 async def create_token(request: TokenRequest):
@@ -70,9 +68,7 @@ async def create_token(request: TokenRequest):
     
     return TokenResponse(
         token=token,
-        room_name=room_name, 
         server_url=os.getenv("LIVEKIT_URL"),
-        expires_in=1800  # 30 minutes
     )
 
 # Health check endpoint
