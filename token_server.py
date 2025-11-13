@@ -62,6 +62,16 @@ async def create_token(request: TokenRequest):
                 can_publish_data=True # Can send text messages
             )
         )
+        .with_room_config(
+            api.RoomConfiguration(
+                agents=[
+                    api.RoomAgentDispatch(
+                        agent_name=os.getenv("AGENT_NAME", "test-agent"),
+                        metadata='{"from":"token_server"}'
+                    )
+                ],
+            )
+        )
         .with_ttl(datetime.timedelta(seconds=1800))  # 30 minutes
         .to_jwt()
     )
