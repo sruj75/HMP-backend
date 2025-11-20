@@ -66,7 +66,6 @@ async def create_token(request: TokenRequest):
             api.RoomConfiguration(
                 agents=[
                     api.RoomAgentDispatch(
-                        agent_name=os.getenv("AGENT_NAME", "test-agent"),
                         metadata='{"from":"token_server"}'
                     )
                 ],
